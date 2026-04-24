@@ -26,11 +26,10 @@ public class Mole : MonoBehaviour
         //UnityEngine.Debug.Log(gameObject.name + " Start finished");
     }
 
-    void Update()
+    void OnTriggerEnter(Collider other)
     {
-        if (Input.GetKeyDown(KeyCode.H))
+        if (other.CompareTag("Mallet"))
         {
-            //UnityEngine.Debug.Log(gameObject.name + " H pressed");
             Hit();
         }
     }
