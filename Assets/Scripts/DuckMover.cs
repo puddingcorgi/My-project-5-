@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class DuckMover : MonoBehaviour
 {
-    public float moveDistance = 0.3f;
-    public float moveSpeed = 2f;
+    public float moveDistance = 0.2f;
+    public float moveSpeed = 1.5f;
 
     private Vector3 startPos;
 

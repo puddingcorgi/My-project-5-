@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Diagnostics;
 using UnityEngine;
+using System.Collections;
 
 public class Mole : MonoBehaviour
 {
@@ -8,12 +7,17 @@ public class Mole : MonoBehaviour
     public float visibleTime = 1.5f;
     public float stunTime = 2f;
 
+    public AudioClip hitClip;
+
     private Vector3 hiddenPos;
     private Vector3 visiblePos;
     private bool isUp = false;
     private bool isStunned = false;
+
     private Renderer rend;
     private Color originalColor;
+    private Vector3 originalScale;
+    private AudioSource audioSource;
 
     void Start()
     {
@@ -22,16 +26,9 @@ public class Mole : MonoBehaviour
 
         rend = GetComponent<Renderer>();
         originalColor = rend.material.color;
+        originalScale = transform.localScale;
 
-        //UnityEngine.Debug.Log(gameObject.name + " Start finished");
-    }
-
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Mallet"))
-        {
-            Hit();
-        }
+        audioSource = GetComponent<AudioSource>();
     }
 
     public IEnumerator PopRoutine()
@@ -40,8 +37,6 @@ public class Mole : MonoBehaviour
             yield break;
 
         isUp = true;
-        //UnityEngine.Debug.Log(gameObject.name + " popped up");
-
         transform.position = visiblePos;
 
         yield return new WaitForSeconds(visibleTime);
@@ -50,14 +45,11 @@ public class Mole : MonoBehaviour
         {
             transform.position = hiddenPos;
             isUp = false;
-            //UnityEngine.Debug.Log(gameObject.name + " went back down");
         }
     }
 
     public void Hit()
     {
-        //UnityEngine.Debug.Log(gameObject.name + " Hit() called, isUp=" + isUp + ", isStunned=" + isStunned);
-
         if (!isUp || isStunned)
             return;
 
@@ -66,18 +58,23 @@ public class Mole : MonoBehaviour
 
     IEnumerator StunRoutine()
     {
-        //UnityEngine.Debug.Log(gameObject.name + " stunned");
-
         isStunned = true;
+
+        if (audioSource != null && hitClip != null)
+        {
+            audioSource.PlayOneShot(hitClip);
+        }
+
         rend.material.color = Color.yellow;
+        transform.localScale = originalScale * 1.5f;
 
         yield return new WaitForSeconds(stunTime);
 
         rend.material.color = originalColor;
+        transform.localScale = originalScale;
         transform.position = hiddenPos;
+
         isUp = false;
         isStunned = false;
-
-        //UnityEngine.Debug.Log(gameObject.name + " recovered");
     }
 }

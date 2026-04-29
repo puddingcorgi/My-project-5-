@@ -15,15 +15,6 @@ public class ProjectileLauncher : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
     }
 
-    void Update()
-    {
-        // ∞¥ø’∏Ò∑¢…‰
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            TryShoot();
-        }
-    }
-
     public void TryShoot()
     {
         if (Time.time - lastShotTime < reloadTime)
@@ -41,7 +32,8 @@ public class ProjectileLauncher : MonoBehaviour
         Rigidbody rb = projectile.GetComponent<Rigidbody>();
         if (rb != null)
         {
-            rb.linearVelocity = firePoint.forward * shootForce;
+            rb.linearVelocity = -
+                firePoint.forward * shootForce;
         }
     }
 }

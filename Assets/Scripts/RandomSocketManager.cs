@@ -5,6 +5,9 @@ public class RandomSocketManager : MonoBehaviour
     public GameObject indicator;
     public GameObject guessBall;
     public Transform[] sockets;
+
+    public GameObject correctMarker;
+
     public float resetDelay = 3f;
 
     public AudioSource audioSource;
@@ -17,6 +20,8 @@ public class RandomSocketManager : MonoBehaviour
     private bool roundEnded = false;
     private float timer = 0f;
 
+    private Renderer markerRenderer;
+
     void Start()
     {
         if (audioSource == null)
@@ -26,6 +31,21 @@ public class RandomSocketManager : MonoBehaviour
 
         ballStartPos = guessBall.transform.position;
         ballStartRot = guessBall.transform.rotation;
+
+        if (correctMarker == null)
+        {
+            correctMarker = GameObject.Find("CorrectMarker");
+        }
+
+        if (correctMarker != null)
+        {
+            markerRenderer = correctMarker.GetComponent<Renderer>();
+            markerRenderer.enabled = false;
+        }
+        else
+        {
+        }
+
         StartNewRound();
     }
 
@@ -34,6 +54,7 @@ public class RandomSocketManager : MonoBehaviour
         if (roundEnded)
         {
             timer += Time.deltaTime;
+
             if (timer >= resetDelay)
             {
                 ResetRound();
@@ -44,7 +65,6 @@ public class RandomSocketManager : MonoBehaviour
     public void CheckSocket(int socketIndex)
     {
         if (roundEnded) return;
-
         roundEnded = true;
         timer = 0f;
 
@@ -59,7 +79,10 @@ public class RandomSocketManager : MonoBehaviour
         }
         else
         {
+
             indicator.GetComponent<Renderer>().material.color = Color.red;
+
+            ShowCorrectSocket();
 
             if (audioSource != null && wrongClip != null)
             {
@@ -68,10 +91,43 @@ public class RandomSocketManager : MonoBehaviour
         }
     }
 
+    void ShowCorrectSocket()
+    {
+
+        if (correctMarker == null)
+        {
+            return;
+        }
+
+        Transform correctSocket = sockets[correctSocketIndex];
+
+        correctMarker.transform.position =
+            correctSocket.position + Vector3.up * 0.8f;
+
+        if (markerRenderer == null)
+        {
+            markerRenderer = correctMarker.GetComponent<Renderer>();
+        }
+
+        if (markerRenderer != null)
+        {
+            markerRenderer.enabled = true;
+        }
+
+    }
+
     void StartNewRound()
     {
-        correctSocketIndex = UnityEngine.Random.Range(0, sockets.Length);
+        correctSocketIndex = Random.Range(0, sockets.Length);
+
+
         indicator.GetComponent<Renderer>().material.color = Color.white;
+
+        if (markerRenderer != null)
+        {
+            markerRenderer.enabled = false;
+        }
+
         roundEnded = false;
         timer = 0f;
     }
@@ -79,6 +135,7 @@ public class RandomSocketManager : MonoBehaviour
     void ResetRound()
     {
         Rigidbody rb = guessBall.GetComponent<Rigidbody>();
+
         if (rb != null)
         {
             rb.linearVelocity = Vector3.zero;
